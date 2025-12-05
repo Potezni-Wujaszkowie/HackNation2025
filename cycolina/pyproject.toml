@@ -1,0 +1,11 @@
+[project]
+name = "cycolina"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "google>=3.0.0",
+    "ruff>=0.14.8",
+    "streamlit>=1.52.1",
+]
