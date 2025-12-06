@@ -1,3 +1,7 @@
+.vscode
 *.pyc
 *.db
 uploads
+.env
+.venv
+__pycache__/

@@ -1,0 +1,15 @@
+[project]
+name = "cycolina"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "google>=3.0.0",
+    "google-genai>=1.53.0",
+    "loguru>=0.7.3",
+    "python-dotenv>=1.2.1",
+    "pyyaml>=6.0.3",
+    "ruff>=0.14.8",
+    "streamlit>=1.52.1",
+]

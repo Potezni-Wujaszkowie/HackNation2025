@@ -1,5 +1,5 @@
-
 # HackNation2025
+
 
 Repozytorium projektu HackNation2025 zawiera rozwiązanie zadania SCENARIUSZE JUTRA dla Ministerstwa Spraw Zagranicznych RP w ramach Hackathonu HackNation2025.
 
