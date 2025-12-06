@@ -14,7 +14,7 @@ def tab2_view():
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
     st.header("Fakty")
 
@@ -40,8 +40,10 @@ def tab2_view():
         selected_ids = []
 
         for fakt_id, fakt_text, zrodlo, waga, data in fakty:
-            col_chk, col_fakt, col_waga, col_zapisz, col_del = st.columns([0.05, 0.4, 0.1, 0.15, 0.15])
-            
+            col_chk, col_fakt, col_waga, col_zapisz, col_del = st.columns(
+                [0.05, 0.4, 0.1, 0.15, 0.15]
+            )
+
             with col_chk:
                 checked = st.checkbox("", key=f"chk_{fakt_id}")
                 if checked:
@@ -68,12 +70,12 @@ def tab2_view():
             with col_waga:
                 nowa_waga = st.number_input(
                     "Waga istotności",
-                    min_value=0.0, max_value=100.0,
+                    min_value=0.0,
+                    max_value=100.0,
                     value=waga,
                     step=0.01,
-                    key=f"tab2_weight_fact_{fakt_id}"
+                    key=f"tab2_weight_fact_{fakt_id}",
                 )
-
 
             with col_zapisz:
                 if st.button("💾 Zapisz", key=f"save_{fakt_id}"):
