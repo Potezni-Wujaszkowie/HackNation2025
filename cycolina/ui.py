@@ -18,27 +18,27 @@ if "urls" not in st.session_state:
     st.session_state.urls = []
 
 
-# -------------------- SIDEBAR --------------------
+# pasek po lewej stronie wysuwany 
 with st.sidebar:
-    st.title("Sources")
+    st.title("Sources for analysis")
 
-    st.subheader("Dodaj nowy URL")
+    st.subheader("Add new URL")
     new_url = st.text_input(
-        "Nowy adres:", 
+        "New url:", 
         placeholder="https://example.com",
         key="new_url_input"
     )
 
-    if st.button("+ Dodaj URL", type="primary"):
+    if st.button("+ add URL", type="primary"):
         if new_url.strip():
             st.session_state.urls.append(new_url.strip())
             st.rerun()
 
     st.markdown("---")
-    st.subheader("Dodane adresy URL")
+    st.subheader("Added URLs")
 
     if not st.session_state.urls:
-        st.info("Brak adresów. Dodaj pierwszy URL powyżej.")
+        st.info("No urls provided. Add first URL to sources")
     else:
         for i, url in enumerate(st.session_state.urls):
             col1, col2 = st.columns([0.8, 0.2])
@@ -51,7 +51,7 @@ with st.sidebar:
 
 
 # -------------------- MAIN SCREEN --------------------
-st.markdown("## Analiza źródeł")
+st.markdown("Source analysis")
 
 st.write("Dodaj adresy URL w panelu po lewej, a następnie rozpocznij analizę poniżej:")
 
