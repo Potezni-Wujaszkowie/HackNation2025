@@ -5,14 +5,25 @@ from db import add_fakt, init_db, get_all_fakty, update_waga, delete_fakt
 
 
 def tab2_view():
+    st.markdown(
+        """
+        <style>
+        .stButton button {
+            white-space: nowrap !important;
+            min-width: 90px !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     st.header("Fakty")
 
     init_db()  # upewniamy się, że tabela istnieje
 
     # --- Dodawanie nowego faktu ---
-    with st.expander("➕ Dodaj nowy fakt", expanded=False):
+    with st.expander("Dodaj nowy fakt", expanded=False):
         fakt = st.text_area("Fakt")
-        weight = st.number_input("Waga", 0.0, 1.0, value=1.0, step=0.01)
+        weight = st.number_input("Waga", 0.0, 100.0, value=0.0, step=0.01)
 
         if st.button("Dodaj fakt"):
             if fakt.strip():
@@ -22,22 +33,20 @@ def tab2_view():
                 st.warning("Fakt nie może być pusty.")
 
     st.write("---")
-    with st.expander("📄 Wylistuj wszystkie fakty", expanded=False):
+    with st.expander("Wylistuj wszystkie fakty", expanded=False):
 
         # --- Pobranie danych z bazy ---
         fakty = get_all_fakty()
         selected_ids = []
 
         for fakt_id, fakt_text, zrodlo, waga, data in fakty:
-            col_chk, col_fakt, col_waga, col_del = st.columns([0.05, 0.6, 0.25, 0.1])
-
-            # checkbox do zaznaczania
+            col_chk, col_fakt, col_waga, col_zapisz, col_del = st.columns([0.05, 0.4, 0.1, 0.15, 0.15])
+            
             with col_chk:
                 checked = st.checkbox("", key=f"chk_{fakt_id}")
                 if checked:
                     selected_ids.append(fakt_id)
 
-            # wyświetlanie faktu
             with col_fakt:
                 st.markdown(
                     f"""
@@ -47,26 +56,32 @@ def tab2_view():
                         background:#fafafa; box-shadow:0 2px 4px rgba(0,0,0,0.05);
                         color:#000000; font-size:16px;
                     ">
-                        <b>📌 Fakt:</b><br>{fakt_text}<br><br>
-                        <b>📁 Źródło:</b> {zrodlo}<br>
-                        <b>🎯 Waga:</b> {waga}<br>
+                        <b>🎯 Fakt:</b><br>{fakt_text}<br><br>
+                        <b>ℹ️ Źródło:</b> {zrodlo}<br>
+                        <b>⚖️ Waga:</b> {waga}<br>
                         <b>📅 Data:</b> {data}
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-            # slider do edycji wagi
             with col_waga:
-                new_waga = st.slider(
-                    "Zmień wagę", 0.0, 1.0, value=waga, step=0.01, key=f"sl_{fakt_id}"
+                nowa_waga = st.number_input(
+                    "Waga istotności",
+                    min_value=0.0, max_value=100.0,
+                    value=waga,
+                    step=0.01,
+                    key=f"tab2_weight_fact_{fakt_id}"
                 )
-                if new_waga != waga:
-                    update_waga(fakt_id, new_waga)
 
-            # przycisk do usuwania
+
+            with col_zapisz:
+                if st.button("💾 Zapisz", key=f"save_{fakt_id}"):
+                    update_waga(fakt_id, nowa_waga)
+                    st.success("Zapisano zmiany w wadze.")
+
             with col_del:
-                if st.button("🗑️", key=f"del_{fakt_id}"):
+                if st.button("❌ Usuń", key=f"tab2_del_fact_{fakt_id}"):
                     delete_fakt(fakt_id)
 
         # --- Wyświetlenie zaznaczonych ID ---
