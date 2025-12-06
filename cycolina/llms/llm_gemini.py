@@ -1,6 +1,6 @@
-from llm_interface import LllmInterface
+from llms.llm_interface import LllmInterface
 from google import genai
-from genai.errors import APIError
+from google.genai.errors import APIError
 from dotenv import load_dotenv, find_dotenv
 import os
 
@@ -15,7 +15,7 @@ class LlmGemini(LllmInterface):
         self.client = genai.Client()
 
     @staticmethod
-    def name(self) -> str:
+    def name() -> str:
         return "Gemini"
 
     def __str__(self):

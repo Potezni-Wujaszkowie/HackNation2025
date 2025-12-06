@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 class LllmInterface(ABC):
     @staticmethod
     @abstractmethod
-    def name(self) -> str:
+    def name() -> str:
         pass
 
     @abstractmethod
