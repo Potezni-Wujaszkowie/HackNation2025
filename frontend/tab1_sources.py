@@ -9,6 +9,7 @@ from backend.agents.agent_plan_and_solve import PlanAndSolve
 import yaml
 from db import add_fakt
 import time
+# from logguru import logger
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -31,18 +32,24 @@ def generate_AI_output(context_path):
     }
 
     chosen_llm = llms[LlmGemini.name()]
-    summary_cache = SummaryCache()
-    documents: dict = {} # taken from the scrapping stage
+    # summary_cache = SummaryCache()
+    # documents: dict = {} # taken from the scrapping stage
 
-    shorts = []
+    # shorts = []
     # for context_path in context_paths:
     with open(context_path, "r", encoding="utf-8") as f:
         document = f.read()
 
+    st.write("document w generate_AI_output:", document)
+
     fakt = generate_brief(chosen_llm, document, config_file["max_brief_words"]).candidates[0].content.parts[0].text
+    # logger.info("Generated fact from file %s: %s", context_path.name, fakt)
+
+
+    st.write("Generated fact from file", context_path.name, ":", generate_brief(chosen_llm, document, config_file["max_brief_words"]))
     st.write("Generated fact:", fakt)
     weight = 0.0
-    add_fakt(fakt, "Dodane przez AI", weight)
+    add_fakt(fakt, os.path.splitext(context_path.name)[0], weight)
 
 
 def tab1_view():
@@ -79,8 +86,7 @@ def tab1_view():
 
             add_source("file", file_path, new_file_desc, new_file_weight)
             process_file(file_path)
-     
-
+            
             time.sleep(1)
 
             output_path = "./uploads_text"
