@@ -34,6 +34,7 @@ def tab2_view():
     st.write("---")
     with st.expander("Wylistuj wszystkie fakty", expanded=False):
         st.subheader("Filtry")
+        st.info("Zaznacz fakty, które AI ma wziąć pod uwagę podczas generowania odpowiedzi (domyślnie wszystkie są zaznaczone).")
 
         col_src, col_sort = st.columns([0.5, 0.5])
         with col_src:
@@ -97,7 +98,7 @@ def tab2_view():
                     )
 
                 with col_zapisz:
-                    if st.button("💾 Zapisz", key=f"save_{fakt_id}"):
+                    if st.button("💾 Zapisz", key=f"tab2_save_fact_{fakt_id}"):
                         update_waga(fakt_id, nowa_waga)
                         st.success("Zapisano zmiany w wadze.")
 

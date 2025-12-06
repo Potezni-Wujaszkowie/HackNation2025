@@ -58,10 +58,10 @@ def tab1_view():
                 "Waga", 0.0, 100.0, value=waga, step=0.01, key=f"w_{source_id}"
             )
         with col4:
-            if st.button("💾 Zapisz", key=f"save_{source_id}"):
+            if st.button("💾 Zapisz", key=f"tab1_save_source_{source_id}"):
                 update_source_waga(source_id, new_waga)
                 st.rerun()
         with col5:
-            if st.button("🗑️ Usuń", key=f"del_{source_id}"):
+            if st.button("🗑️ Usuń", key=f"tab1_del_source_{source_id}"):
                 delete_source(source_id)
                 st.rerun()
