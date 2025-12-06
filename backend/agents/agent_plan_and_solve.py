@@ -10,14 +10,14 @@ class PlanAndSolve(AgentInterface):
         return "Planandsolve"
 
     def run(
-        self, llm: LllmInterface, context: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
+        self, llm: LllmInterface, hiperparams: dict,context: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
     ) -> str:
-        reasoning_plan = self.plan(llm, context, brief_prompts, user_prompt, previous_attempts)
-        return self.solve(llm, context, reasoning_plan, brief_prompts, user_prompt, previous_attempts)
+        reasoning_plan = self.plan(llm, hiperparams, context, merged_briefs, user_prompt, previous_attempts)
+        return self.solve(llm, hiperparams, reasoning_plan, merged_briefs, user_prompt, previous_attempts)
 
     @staticmethod
     def plan(
-        llm: LllmInterface, system_prompt: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
+        llm: LllmInterface, hiperparams: dict, system_prompt: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
     ) -> str:
         """
         Planning — understand intent and design an execution strategy.
@@ -27,36 +27,38 @@ class PlanAndSolve(AgentInterface):
 
         planning_prompt = (
             f"Jesteś Głównym Analitykiem Strategicznym Republiki Atlantis. "
-            f"Twoim zadaniem jest przeanalizowanie danych wywiadowczych i stworzenie PLANU ROZUMOWANIA (Chain of Thought).\n\n"
+            f"Twoim zadaniem jest przeanalizowanie ważonych danych wywiadowczych i stworzenie PLANU ROZUMOWANIA.\n\n"
 
-            f"### KONTEKST STATYCZNY (PROFIL PAŃSTWA ATLANTIS):\n{system_prompt}\n\n"
+            f"### KONTEKST STATYCZNY (PROFIL ATLANTIS):\n{system_prompt}\n\n"
 
-            f"### DANE WEJŚCIOWE (STRESZCZENIA DOKUMENTÓW):\n{brief_prompts}\n\n"
+            f"### DANE WEJŚCIOWE Z WAGAMI (PRIORYTETY):\n"
+            f"Format danych to: 'WEIGHT: [Wartość] BRIEF: [Treść]'.\n"
+            f"{merged_briefs}\n\n"
 
             f"### HISTORIA ROZMOWY:\n{chat_history}\n\n"
 
-            f"### AKTUALNE ZAPYTANIE UŻYTKOWNIKA:\n{user_prompt}\n\n"
+            f"### AKTUALNE ZAPYTANIE:\n{user_prompt}\n\n"
 
-            f"### INSTRUKCJE:\n"
-            f"1. Przeanalizuj dane wejściowe (mogą być po angielsku) pod kątem interesów Atlantis.\n"
-            f"2. Zidentyfikuj intencję użytkownika: czy chce pełnego raportu, czy odpowiedzi na konkretne pytanie (czat).\n"
-            f"3. Stwórz ustrukturyzowany plan odpowiedzi. NIE pisz jeszcze finalnego tekstu raportu/odpowiedzi.\n"
-            f"4. **UWAGA: Cały Twój proces myślowy i plan muszą być w JĘZYKU POLSKIM.**\n\n"
+            f"### INSTRUKCJE ANALITYCZNE:\n"
+            f"1. **ANALIZA WAG (KLUCZOWE):** Zwróć szczególną uwagę na parametr `WEIGHT` przy każdym streszczeniu.\n"
+            f"   - **Wysoka waga:** Informacje te są krytyczne, pewne i nadrzędne. Muszą stanowić fundament scenariuszy.\n"
+            f"   - **Niska waga:** Informacje pomocnicze. W razie sprzeczności z dokumentem o wyższej wadze – ignoruj je.\n"
+            f"2. Zidentyfikuj intencję użytkownika (Raport vs Czat).\n"
+            f"3. Stwórz plan w JĘZYKU POLSKIM.\n\n"
 
             f"W swoim planie uwzględnij:\n"
-            f"- **Filtr Istotności:** Które dokumenty (cytuj ID, np. [DOC_01]) są kluczowe dla zapytania?\n"
-            f"- **Analiza Korelacji:** Jakie są ukryte powiązania między faktami?\n"
-            f"- **Szkic Odpowiedzi/Scenariuszy:** Główne tezy, które poruszysz.\n"
-            f"- **Weryfikacja Źródeł:** Potwierdź, że masz dowody (ID) na swoje tezy.\n\n"
+            f"- **Filtr Istotności:** Wymień ID dokumentów o NAJWYŻSZEJ wadze, na których oprzesz analizę.\n"
+            f"- **Rozwiązywanie Konfliktów:** Jeśli dokumenty są sprzeczne, wskaż, że wybierasz wersję z dokumentu o wyższej wadze.\n"
+            f"- **Szkic Scenariuszy:** Główne tezy oparte na priorytetowych danych.\n\n"
 
-            f"Wygeneruj teraz plan rozumowania w języku polskim."
+            f"Wygeneruj teraz plan rozumowania."
         )
 
         return llm.generate_response(planning_prompt)
 
     @staticmethod
     def solve(
-        llm: LllmInterface, system_prompt: str, plan: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
+        llm: LllmInterface, hiperparams: dict, system_prompt: str, plan: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
     ) -> str:
         """
         Solving — Generate the final Diplomatic Report based on the reasoning plan.
@@ -69,26 +71,34 @@ class PlanAndSolve(AgentInterface):
             f"Twoim celem jest wykonanie przygotowanego planu i wygenerowanie finalnej odpowiedzi dla Ambasadora.\n\n"
 
             f"### BAZA WIEDZY (PROFIL ATLANTIS):\n{system_prompt}\n\n"
-            f"### DANE ŹRÓDŁOWE:\n{brief_prompts}\n\n"
+
+            f"### DANE ŹRÓDŁOWE Z WAGAMI (PRIORYTETY):\n"
+            f"Format: 'WEIGHT: [Wartość] BRIEF: [Treść]'.\n"
+            f"{brief_prompts}\n\n"
+
             f"### HISTORIA ROZMOWY:\n{chat_history}\n\n"
             f"### PLAN ANALITYKA (TWOJE WYTYCZNE):\n{plan}\n\n"
             f"### ZAPYTANIE UŻYTKOWNIKA:\n{user_prompt}\n\n"
 
             f"### INSTRUKCJE WYKONAWCZE:\n"
-            f"1. Jeśli plan zakłada **Pełny Raport**, zachowaj strukturę:\n"
+            f"1. **Hierarchia Ważności:** Budując narrację, opieraj główne tezy na dokumentach o najwyższej wadze (`WEIGHT`). Informacje o niskiej wadze traktuj jako tło lub niepotwierdzone sygnały.\n"
+            f"2. Jeśli plan zakłada **Pełny Raport**, zachowaj strukturę:\n"
             f"   - SEKCJA A: Streszczenie Wykonawcze\n"
-            f"   - SEKCJA B: Scenariusze Strategiczne (Narracja + Wyjaśnienie przyczn)\n"
+            f"   - SEKCJA B: Scenariusze Strategiczne (Narracja + Wyjaśnienie przyczyn)\n"
             f"   - SEKCJA C: Rekomendacje (Ofensywne/Defensywne)\n"
-            f"2. Jeśli plan zakłada **Odpowiedź na Pytanie** (tryb czatu), udziel konkretnej odpowiedzi merytorycznej.\n"
-            f"3. **JĘZYK:** Cała odpowiedź musi być w profesjonalnym **JĘZYKU POLSKIM**.\n\n"
+            f"3. Jeśli plan zakłada **Odpowiedź na Pytanie** (tryb czatu), udziel konkretnej odpowiedzi merytorycznej.\n"
+            f"4. **JĘZYK:** Cała odpowiedź musi być w profesjonalnym **JĘZYKU POLSKIM**.\n\n"
 
             f"### KRYTYCZNE ZASADY:\n"
-            f"- **Wyjaśnialność (Explainability):** KAŻDE stwierdzenie oparte na faktach musi zawierać przypis do ID źródła (np. [DOC_01], [DOC_15]).\n"
+            f"- **Wyjaśnialność (Explainability):** KAŻDE stwierdzenie oparte na faktach musi zawierać przypis do ID źródła (np. [DOC_01]).\n"
+            f"- **Wagi a Język Pewności (Kluczowe):** Dostosuj stopień stanowczości do wagi źródła.\n"
+            f"    - **Wysoka waga:** Używaj sformułowań pewnych: 'Zagrożenie jest krytyczne', 'Dane potwierdzają', 'Jest wysoce prawdopodobne'.\n"
+            f"    - **Niska waga:** Używaj trybu przypuszczającego: 'Istnieją przesłanki', 'Wymaga weryfikacji', 'Możliwy scenariusz', 'Według niepotwierdzonych doniesień'.\n"
             f"- **Ton:** Profesjonalny, dyplomatyczny, bezstronny.\n"
             f"- **Formatowanie:** NIE używaj nagłówków typu 'Do:', 'Od:', 'Data:'. Zacznij od razu od treści raportu (np. '**SEKCJA A...**') lub bezpośredniej odpowiedzi.\n"
             f"- **Ciągłość:** Jeśli użytkownik prosi o poprawkę, uwzględnij historię rozmowy.\n\n"
 
-            f"Wygeneruj teraz finalną treść w języku polskim."
+            f"Wygeneruj teraz finalną treść ({hiperparams['type']} scenariusz) w języku polskim dla horyzontu czasowego {hiperparams['time']} miesięcy w przód."
         )
 
         return llm.generate_response(solving_prompt)

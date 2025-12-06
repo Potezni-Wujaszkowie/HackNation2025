@@ -9,8 +9,8 @@ class AgentInterface(ABC):
         pass
 
     @abstractmethod
-    async def run(
-        self, llm: LllmInterface, context: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
+    def run(
+        self, llm: LllmInterface, hiperparams: dict, context: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
     ) -> str:
         pass
 

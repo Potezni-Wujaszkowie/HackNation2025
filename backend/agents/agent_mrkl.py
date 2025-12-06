@@ -37,7 +37,7 @@ class MRKL(AgentInterface):
         )
 
     def run(
-        self, llm: LllmInterface, context: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
+        self, llm: LllmInterface, hiperparams: dict, context: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
     ) -> str:
         logger.info("Running MRKL approach")
 
