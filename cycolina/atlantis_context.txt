@@ -1,31 +1,35 @@
-### CONTEXT: REPUBLIC OF ATLANTIS (STRATEGIC PROFILE)
+### KONTEKST: REPUBLIKA ATLANTIS (PROFIL STRATEGICZNY)
 
-You must strictly adhere to the following comprehensive profile of Atlantis. Every prediction and recommendation must be filtered through these facts.
+Musisz ściśle przestrzegać poniższego, kompleksowego profilu państwa Atlantis. Każda prognoza i rekomendacja musi być filtrowana przez pryzmat tych faktów.
 
-* **Political & Historical Foundations:**
-    * **Government:** Parliamentary Democracy (130 years).
-    * **Key Milestones:** EU & NATO member since **1997**. 25th largest global economy by GDP since **2020**.
-    * **Economic History:** Experienced stagnation periods (1930-1950, 1980-1990).
-    * **Fiscal Status:** Budget deficit and public debt are near the EU average.
+#### Fundamenty polityczne i historyczne
 
-* **Geography & Environment:**
-    * **Location:** Access to the **Baltic Sea**. Features several large **navigable rivers**.
-    * **Climate:** Temperate.
-    * **Critical Vulnerability:** **Limited drinking water resources**.
+* **Rząd:** Demokracja parlamentarna (od 130 lat).
+* **Kluczowe kamienie milowe:** Członek **UE** i **NATO** od **1997 roku**. 25. gospodarka świata wg PKB od **2020 roku**.
+* **Historia gospodarcza:** Okresy stagnacji w latach 1930-1950 oraz 1980-1990.
+* **Status fiskalny:** Deficyt budżetowy oraz dług publiczny w okolicach średniej unijnej.
 
-* **Socio-Economic Strengths:**
-    * **Population:** 28 million.
-    * **Digitalization:** Social digitalization level is **above the European average**.
-    * **Strong Sectors:** Heavy industry, automotive, food processing, chemical, and **ICT**.
-    * **Strategic Ambitions (Future Focus):** Leading role in **Renewable Energy Sources (RES)**, processing of **Critical Raw Materials**, and building transnational **AI infrastructure** (Big Data Centers, AI Gigafactories, Quantum Computers).
-    * **Currency:** **Own national currency** (not the Euro).
+#### Geografia i Środowisko
 
-* **Security & Geopolitical Risks:**
-    * **Defense Capability:** Standing army of **150,000 professional soldiers**.
-    * **Key Bilateral Relations:** Germany, France, Finland, Ukraine, USA, Japan.
-    * **Military Threats:** Direct **armed attack risk** from a neighboring state. Persistent, multi-year **hybrid and cyber attacks** targeting critical infrastructure (power, telecommunications) from at least one neighbor.
-    * **Economic/Political Risks:**
-        * **EU Disintegration:** Risk of instability or fragmentation into "multi-speed" groups.
-        * **Information Warfare:** Negative state-sponsored image campaigns against the government or society.
-        * **Energy Supply:** Disruptions to hydrocarbon imports (USA, Scandinavia, Persian Gulf) due to exporter domestic policy changes or transit issues (e.g., Red Sea attacks).
-        * **ICT Embargo:** Vulnerability to a slowdown in the ICT sector due to **embargoes on highly advanced processors**.
+* **Położenie:** Dostęp do **Morza Bałtyckiego**. Posiada kilka dużych **rzek żeglownych**.
+* **Klimat:** Umiarkowany.
+* **Krytyczna wrażliwość:** **Ograniczone zasoby wody pitnej**.
+
+#### Mocne strony społeczno-gospodarcze
+
+* **Ludność:** 28 mln.
+* **Cyfryzacja:** Stopień cyfryzacji społeczeństwa **powyżej średniej europejskiej**.
+* **Silne sektory:** Przemysł ciężki, motoryzacyjny, spożywczy, chemiczny oraz **ICT**.
+* **Ambicje strategiczne (Fokus na przyszłość):** Wiodąca rola w zakresie **OZE** (Odnawialne Źródła Energii), przetwarzania **surowców krytycznych** oraz budowy ponadnarodowej **infrastruktury AI** (m.in. centra Big Data, gigafabryki AI, komputery kwantowe).
+* **Waluta:** **Własna waluta narodowa** (inna niż euro).
+
+#### Bezpieczeństwo i zagrożenia geopolityczne
+
+* **Zdolności obronne:** Armia zawodowa licząca **150 tys. żołnierzy**.
+* **Kluczowe relacje dwustronne:** Niemcy, Francja, Finlandia, Ukraina, USA, Japonia.
+* **Zagrożenia militarne:** Ryzyko bezpośredniego **ataku zbrojnego** ze strony państwa sąsiedniego. Trwające od wielu lat **ataki hybrydowe i cyberataki** wymierzone w infrastrukturę krytyczną (energetyka, telekomunikacja) ze strony co najmniej jednego sąsiada.
+* **Ryzyka gospodarcze/polityczne:**
+    * **Dezintegracja UE:** Ryzyko niestabilności lub rozpadu na grupy „różnych prędkości” pod względem integracji.
+    * **Wojna informacyjna:** Negatywne kampanie wizerunkowe sponsorowane przez obce państwa, wymierzone w rząd lub społeczeństwo.
+    * **Dostawy energii:** Zakłócenia w imporcie węglowodorów (USA, Skandynawia, Zatoka Perska) wynikające ze zmian polityki wewnętrznej eksporterów lub problemów tranzytowych (np. ataki na Morzu Czerwonym).
+    * **Embargo ICT:** Narażenie na spowolnienie sektora ICT z powodu **embarga na wysokozawansowane procesory**.

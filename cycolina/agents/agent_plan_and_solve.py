@@ -26,27 +26,30 @@ class PlanAndSolve(AgentInterface):
         chat_history = format_previous_attempts(previous_attempts)
 
         planning_prompt = (
-            f"You are the Chief Strategic Intelligence Analyst for Atlantis. "
-            f"Your task is to analyze raw intelligence data and create a STRATEGIC REASONING PLAN.\n\n"
+            f"Jesteś Głównym Analitykiem Strategicznym Republiki Atlantis. "
+            f"Twoim zadaniem jest przeanalizowanie danych wywiadowczych i stworzenie PLANU ROZUMOWANIA (Chain of Thought).\n\n"
 
-            f"### STATIC CONTEXT (ATLANTIS PROFILE):\n{system_prompt}\n\n"
+            f"### KONTEKST STATYCZNY (PROFIL PAŃSTWA ATLANTIS):\n{system_prompt}\n\n"
 
-            f"### CONVERSATION HISTORY (CONTEXT):\n"
-            f"{chat_history}\n\n"
+            f"### DANE WEJŚCIOWE (STRESZCZENIA DOKUMENTÓW):\n{brief_prompts}\n\n"
 
-            f"### INPUT DATA (INTELLIGENCE BRIEFS):\n{brief_prompts}\n\n"
+            f"### HISTORIA ROZMOWY:\n{chat_history}\n\n"
 
-            f'### THE USER PROMPT (USER QUESTION OR INTENT):\n{user_prompt}\n\n'
+            f"### AKTUALNE ZAPYTANIE UŻYTKOWNIKA:\n{user_prompt}\n\n"
 
-            f"### INSTRUCTIONS:\n"
-            f"Analyze the input data and outline your reasoning strategy. DO NOT write the final report yet. "
-            f"Instead, produce a structured plan covering:\n"
-            f"1. **Relevance Filter:** Which specific documents (cite IDs) are critical for Atlantis's security/economy?\n"
-            f"2. **Correlation Analysis:** Identify hidden links between documents (e.g., [DOC_1] + [DOC_4] implies Risk X).\n"
-            f"3. **Scenario Skeleton:** Briefly define the 4 required scenarios (12m+/-, 36m+/-). For each, list the 'Trigger Event' and the 'Chain of Causality'.\n"
-            f"4. **Citation Strategy:** List which ID you will use to prove each major claim.\n\n"
-            f"5. **Formatting:** Do NOT use email/memo headers (To/From/Date/Subject). Start the response IMMEDIATELY with the exact string '**SECTION A: Executive Summary**'.\n\n"
-            f"Output your response as a structured thinking process."
+            f"### INSTRUKCJE:\n"
+            f"1. Przeanalizuj dane wejściowe (mogą być po angielsku) pod kątem interesów Atlantis.\n"
+            f"2. Zidentyfikuj intencję użytkownika: czy chce pełnego raportu, czy odpowiedzi na konkretne pytanie (czat).\n"
+            f"3. Stwórz ustrukturyzowany plan odpowiedzi. NIE pisz jeszcze finalnego tekstu raportu/odpowiedzi.\n"
+            f"4. **UWAGA: Cały Twój proces myślowy i plan muszą być w JĘZYKU POLSKIM.**\n\n"
+
+            f"W swoim planie uwzględnij:\n"
+            f"- **Filtr Istotności:** Które dokumenty (cytuj ID, np. [DOC_01]) są kluczowe dla zapytania?\n"
+            f"- **Analiza Korelacji:** Jakie są ukryte powiązania między faktami?\n"
+            f"- **Szkic Odpowiedzi/Scenariuszy:** Główne tezy, które poruszysz.\n"
+            f"- **Weryfikacja Źródeł:** Potwierdź, że masz dowody (ID) na swoje tezy.\n\n"
+
+            f"Wygeneruj teraz plan rozumowania w języku polskim."
         )
 
         return llm.generate_response(planning_prompt)
@@ -61,34 +64,30 @@ class PlanAndSolve(AgentInterface):
         chat_history = format_previous_attempts(previous_attempts)
 
         solving_prompt = (
-            f"You are the Diplomatic Report Writer for the Republic of Atlantis. "
-            f"Execute the provided reasoning plan to generate the final Strategic Foresight Report.\n\n"
+            f"Działasz jako Sekretarz ds. Raportów Dyplomatycznych Republiki Atlantis. "
+            f"Twoim celem jest wykonanie przygotowanego planu i wygenerowanie finalnej odpowiedzi dla Ambasadora.\n\n"
 
-            f"### STATIC CONTEXT (ATLANTIS PROFILE):\n{system_prompt}\n\n"
+            f"### BAZA WIEDZY (PROFIL ATLANTIS):\n{system_prompt}\n\n"
+            f"### DANE ŹRÓDŁOWE:\n{brief_prompts}\n\n"
+            f"### HISTORIA ROZMOWY:\n{chat_history}\n\n"
+            f"### PLAN ANALITYKA (TWOJE WYTYCZNE):\n{plan}\n\n"
+            f"### ZAPYTANIE UŻYTKOWNIKA:\n{user_prompt}\n\n"
 
-            f"### INPUT DATA (INTELLIGENCE BRIEFS):\n{brief_prompts}\n\n"
+            f"### INSTRUKCJE WYKONAWCZE:\n"
+            f"1. Jeśli plan zakłada **Pełny Raport**, zachowaj strukturę:\n"
+            f"   - SEKCJA A: Streszczenie Wykonawcze\n"
+            f"   - SEKCJA B: Scenariusze Strategiczne (Narracja + Wyjaśnienie przyczn)\n"
+            f"   - SEKCJA C: Rekomendacje (Ofensywne/Defensywne)\n"
+            f"2. Jeśli plan zakłada **Odpowiedź na Pytanie** (tryb czatu), udziel konkretnej odpowiedzi merytorycznej.\n"
+            f"3. **JĘZYK:** Cała odpowiedź musi być w profesjonalnym **JĘZYKU POLSKIM**.\n\n"
 
-            f"### CONVERSATION HISTORY:\n"
-            f"{chat_history}\n\n"
+            f"### KRYTYCZNE ZASADY:\n"
+            f"- **Wyjaśnialność (Explainability):** KAŻDE stwierdzenie oparte na faktach musi zawierać przypis do ID źródła (np. [DOC_01], [DOC_15]).\n"
+            f"- **Ton:** Profesjonalny, dyplomatyczny, bezstronny.\n"
+            f"- **Formatowanie:** NIE używaj nagłówków typu 'Do:', 'Od:', 'Data:'. Zacznij od razu od treści raportu (np. '**SEKCJA A...**') lub bezpośredniej odpowiedzi.\n"
+            f"- **Ciągłość:** Jeśli użytkownik prosi o poprawkę, uwzględnij historię rozmowy.\n\n"
 
-            f"### ANALYST'S REASONING PLAN:\n{plan}\n\n"
-
-            f'### THE USER PROMPT (USER QUESTION OR INTENT):\n{user_prompt}\n\n'
-
-            f"### EXECUTION INSTRUCTIONS:\n"
-            f"Write the final report (2000-3000 words) strictly following the Plan above.\n"
-            f"Structure:\n"
-            f"**SECTION A: Executive Summary**\n"
-            f"**SECTION B: Strategic Scenarios** (For each: Narrative, Chain of Thought, Impact)\n"
-            f"**SECTION C: Recommendations** (Defensive/Offensive)\n\n"
-
-            f"### CRITICAL RULES:\n"
-            f"1. **Explainability:** CITATIONS ARE MANDATORY. You must cite source IDs (e.g., [DOC_01]) for every claim.\n"
-            f"2. **Tone:** Professional, diplomatic, tailored to the Ambassador.\n"
-            f"3. **Continuity:** If the user asked for a change, ensure this report reflects that change compared to history.\n"
-            f"4. **No Appendices:** Do not list source data at the end (the system will handle that).\n\n"
-
-            f"Generate the final report content now."
+            f"Wygeneruj teraz finalną treść w języku polskim."
         )
 
         return llm.generate_response(solving_prompt)
