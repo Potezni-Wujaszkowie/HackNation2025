@@ -5,40 +5,12 @@ from db import add_fakt, init_db, get_all_fakty, update_waga, delete_fakt
 from loguru import logger
 from extract_engine import TEXT_OUTPUT_FOLDER
 import os
-from backend.llms.llm_interface import LllmInterface
-from backend.llms.llm_gemini import LlmGemini
-from backend.summary_cache import SummaryCache
-from backend.agents.agent_plan_and_solve import PlanAndSolve
-import yaml
-
-def generate_brief(llm: LllmInterface, document: str, max_words: int) -> str:
-    prompt = f'Używając maksymalnie {max_words} słów wygeneruj streszczenie'
-    f'poniższego dokumentu (uwzględnij jak najwięcej faktów, liczb oraz konkretów):\n\n{document}'
-    return llm.generate_response(prompt)
 
 
-def generate_AI_output(context_paths):
 
-    
-    with open("config.yaml", "r") as f:
-        config_file = yaml.safe_load(f)
+        # shorts.append()
 
-    llms = {
-        LlmGemini.name(): LlmGemini()
-    }
-
-    chosen_llm = llms[LlmGemini.name()]
-    summary_cache = SummaryCache()
-    documents: dict = {} # taken from the scrapping stage
-
-    shorts = []
-    for context_path in context_paths:
-        with open(context_path, "r", encoding="utf-8") as f:
-            document = f.read()
-
-        shorts.append(generate_brief(chosen_llm, document, config_file["max_brief_words"]))
-
-    return shorts
+    # return shorts
 
     # shorts = []
     # for id, document in documents:
@@ -166,16 +138,21 @@ def tab2_view():
                         st.rerun()
         
         if st.button("GENERATE", key=f"tab2_generate_facts"):
-            # tutaj chce pętle która która do listy zapisze wszystkie ścieżki do plików z folderu TEXT_OUTPUT_FOLDER
-            context_paths = []
+            
+            # context_paths = []
+            # output_path = "./uploads_text"
 
-            for file_name in os.listdir(TEXT_OUTPUT_FOLDER):
-                if file_name.endswith(".txt"):
-                    context_path = os.path.join(TEXT_OUTPUT_FOLDER, file_name)
-                    context_paths.append(context_path)
+            # for file_name in os.listdir(output_path):
+            #     if file_name.endswith(".txt"):
+            #         context_path = os.path.join(output_path, file_name)
+            #         context_paths.append(context_path)
 
-            shorts = generate_AI_output(context_paths)
-            st.write("Shorts: ", shorts)
+            # shorts = generate_AI_output(context_paths)
+
+
+            # logger.info(f"context_paths: {context_paths}")
+            # st.write("Shorts: ", shorts)
+
 
             
             
@@ -183,5 +160,5 @@ def tab2_view():
             st.success("Wygenerowano odpowidź na podstawie zaznaczonych faktów.")
 
         if selected_ids:
-            st.write("Shorts: ", shorts)
-            # st.write("Zaznaczone ID:", selected_ids)
+            # st.write("Shorts: ", shorts)
+            st.write("Zaznaczone ID:", selected_ids)

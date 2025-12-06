@@ -2,9 +2,47 @@ import streamlit as st
 from db import init_db, add_source, get_sources, update_source_waga, delete_source
 from extract_engine import process_file
 import os
+from backend.llms.llm_interface import LllmInterface
+from backend.llms.llm_gemini import LlmGemini
+from backend.summary_cache import SummaryCache
+from backend.agents.agent_plan_and_solve import PlanAndSolve
+import yaml
+from db import add_fakt
+import time
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def generate_brief(llm: LllmInterface, document: str, max_words: int) -> str:
+    prompt = f'Używając maksymalnie {max_words} słów wygeneruj streszczenie'
+    f'poniższego dokumentu (uwzględnij jak najwięcej faktów, liczb oraz konkretów):\n\n{document}'
+    return llm.generate_response(prompt)
+
+
+def generate_AI_output(context_path):
+    st.write("context_paths w funkcji generate_AI_output:", context_path)
+
+    with open("config.yaml", "r") as f:
+        config_file = yaml.safe_load(f)
+
+    llms = {
+        LlmGemini.name(): LlmGemini()
+    }
+
+    chosen_llm = llms[LlmGemini.name()]
+    summary_cache = SummaryCache()
+    documents: dict = {} # taken from the scrapping stage
+
+    shorts = []
+    # for context_path in context_paths:
+    with open(context_path, "r", encoding="utf-8") as f:
+        document = f.read()
+
+    fakt = generate_brief(chosen_llm, document, config_file["max_brief_words"]).candidates[0].content.parts[0].text
+    st.write("Generated fact:", fakt)
+    weight = 0.0
+    add_fakt(fakt, "Dodane przez AI", weight)
 
 
 def tab1_view():
@@ -41,6 +79,31 @@ def tab1_view():
 
             add_source("file", file_path, new_file_desc, new_file_weight)
             process_file(file_path)
+     
+
+            time.sleep(1)
+
+            output_path = "./uploads_text"
+            file_name_without_ext = os.path.splitext(uploaded_file.name)[0]
+            file_name_txt = file_name_without_ext + ".txt"
+            context_path = os.path.join(output_path, file_name_txt)
+            fact_text = generate_AI_output(context_path) 
+
+
+
+            # st.write("context_path: ", context_path)
+            # st.write("file_path: ", file_path)
+            
+
+            # context_paths = []
+            # output_path = "./uploads_text"
+
+            # for file_name in os.listdir(output_path):
+            #     if file_name.endswith(".txt"):
+            #         context_path = os.path.join(output_path, file_path)
+            #         context_paths.append(context_path)
+            # shorts = 
+
             st.success(f"Dodano plik: {uploaded_file.name}")
 
     st.markdown("---")

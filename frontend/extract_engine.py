@@ -28,6 +28,7 @@ def save_full_text(text, file_base_name):
     output_file = os.path.join(TEXT_OUTPUT_FOLDER, f"{file_base_name}.txt")
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(text)
+        # os.fsync(f.fileno())
 
 
 def process_file(file_path):
@@ -44,3 +45,5 @@ def process_file(file_path):
 
     save_full_text(text, file_base_name)
     print(f"Przetworzono {file_name}, zapisano cały tekst w {TEXT_OUTPUT_FOLDER}/{file_base_name}.txt")
+    # st.write(f"Przetworzono {file_name}, zapisano cały tekst w {TEXT_OUTPUT_FOLDER}/{file_base_name}.txt")
+
