@@ -18,9 +18,8 @@ def tab2_view():
     )
     st.header("Fakty")
 
-    init_db()  # upewniamy się, że tabela istnieje
+    init_db()
 
-    # --- Dodawanie nowego faktu ---
     with st.expander("Dodaj nowy fakt", expanded=False):
         fakt = st.text_area("Fakt")
         weight = st.number_input("Waga", 0.0, 100.0, value=0.0, step=0.01)
@@ -34,58 +33,83 @@ def tab2_view():
 
     st.write("---")
     with st.expander("Wylistuj wszystkie fakty", expanded=False):
+        st.subheader("Filtry")
 
-        # --- Pobranie danych z bazy ---
-        fakty = get_all_fakty()
-        selected_ids = []
-
-        for fakt_id, fakt_text, zrodlo, waga, data in fakty:
-            col_chk, col_fakt, col_waga, col_zapisz, col_del = st.columns(
-                [0.05, 0.4, 0.1, 0.15, 0.15]
+        col_src, col_sort = st.columns([0.5, 0.5])
+        with col_src:
+            filter_src = st.text_input(
+                "Filtruj po nazwie źródła",
+                value="",
+                key="filter_src"
+            )
+        with col_sort:
+            sort_order = st.selectbox(
+                "Sortuj wg daty:",
+                ["Od najnowszej", "Od najstarszej"],
+                key="sort_date"
             )
 
-            with col_chk:
-                checked = st.checkbox("", key=f"chk_{fakt_id}")
-                if checked:
-                    selected_ids.append(fakt_id)
+        fakty = get_all_fakty()
+        filtered_facts = []
+        for fakt in fakty:
+            _id, _text, _src, _waga, _data = fakt
+            if filter_src.strip() == "" or filter_src.strip().lower() in _src.lower():
+                filtered_facts.append(fakt)
 
-            with col_fakt:
-                st.markdown(
-                    f"""
-                    <div style="
-                        padding:18px; border:1px solid #e0e0e0;
-                        border-radius:12px; margin-bottom:14px;
-                        background:#fafafa; box-shadow:0 2px 4px rgba(0,0,0,0.05);
-                        color:#000000; font-size:16px;
-                    ">
-                        <b>🎯 Fakt:</b><br>{fakt_text}<br><br>
-                        <b>ℹ️ Źródło:</b> {zrodlo}<br>
-                        <b>⚖️ Waga:</b> {waga}<br>
-                        <b>📅 Data:</b> {data}
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
+        filtered_facts.sort(key=lambda x: x[4], reverse=(sort_order == "Od najnowszej"))
+
+
+        selected_ids = []
+        if not filtered_facts:
+            st.info("Brak faktów spełniających kryteria.")
+        else:
+            for fakt_id, fakt_text, zrodlo, waga, data in filtered_facts:
+                col_chk, col_fakt, col_waga, col_zapisz, col_del = st.columns(
+                    [0.05, 0.35, 0.1, 0.15, 0.15]
                 )
 
-            with col_waga:
-                nowa_waga = st.number_input(
-                    "Waga istotności",
-                    min_value=0.0,
-                    max_value=100.0,
-                    value=waga,
-                    step=0.01,
-                    key=f"tab2_weight_fact_{fakt_id}",
-                )
+                with col_chk:
+                    checked = st.checkbox("", key=f"chk_{fakt_id}", value=True)
+                    if checked:
+                        selected_ids.append(fakt_id)
 
-            with col_zapisz:
-                if st.button("💾 Zapisz", key=f"save_{fakt_id}"):
-                    update_waga(fakt_id, nowa_waga)
-                    st.success("Zapisano zmiany w wadze.")
+                with col_fakt:
+                    st.markdown(
+                        f"""
+                        <div style="
+                            padding:18px; border:1px solid #e0e0e0;
+                            border-radius:12px; margin-bottom:14px;
+                            background:#fafafa; box-shadow:0 2px 4px rgba(0,0,0,0.05);
+                            color:#000000; font-size:16px;
+                        ">
+                            <b>🎯 Fakt:</b><br>{fakt_text}<br><br>
+                            <b>ℹ️ Źródło:</b> {zrodlo}<br>
+                            <b>⚖️ Waga:</b> {waga}<br>
+                            <b>📅 Data:</b> {data}
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-            with col_del:
-                if st.button("❌ Usuń", key=f"tab2_del_fact_{fakt_id}"):
-                    delete_fakt(fakt_id)
+                with col_waga:
+                    nowa_waga = st.number_input(
+                        "Waga istotności",
+                        min_value=0.0,
+                        max_value=100.0,
+                        value=waga,
+                        step=0.01,
+                        key=f"tab2_weight_fact_{fakt_id}",
+                    )
 
-        # --- Wyświetlenie zaznaczonych ID ---
+                with col_zapisz:
+                    if st.button("💾 Zapisz", key=f"save_{fakt_id}"):
+                        update_waga(fakt_id, nowa_waga)
+                        st.success("Zapisano zmiany w wadze.")
+
+                with col_del:
+                    if st.button("❌ Usuń", key=f"tab2_del_fact_{fakt_id}"):
+                        delete_fakt(fakt_id)
+                        st.rerun()
+
         if selected_ids:
             st.write("Zaznaczone ID:", selected_ids)
