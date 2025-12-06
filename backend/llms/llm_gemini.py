@@ -1,8 +1,10 @@
-from llms.llm_interface import LllmInterface
+from backend.llms.llm_interface import LllmInterface
 from google import genai
 from google.genai.errors import APIError
 from dotenv import load_dotenv, find_dotenv
 import os
+
+from loguru import logger
 
 load_dotenv(find_dotenv())
 
@@ -13,6 +15,9 @@ class LlmGemini(LllmInterface):
 
         self.model = model
         self.client = genai.Client()
+
+        logger.info(f"Initialized Gemini LLM with model: {self.model}")
+
 
     @staticmethod
     def name() -> str:

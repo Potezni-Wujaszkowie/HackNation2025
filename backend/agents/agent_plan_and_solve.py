@@ -1,7 +1,7 @@
 from loguru import logger
 
-from agents.agent_interface import AgentInterface, format_previous_attempts
-from llms.llm_interface import LllmInterface
+from backend.agents.agent_interface import AgentInterface, format_previous_attempts
+from backend.llms.llm_interface import LllmInterface
 
 
 class PlanAndSolve(AgentInterface):
@@ -19,10 +19,10 @@ class PlanAndSolve(AgentInterface):
     def plan(
         llm: LllmInterface, system_prompt: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
     ) -> str:
-        logger.info("Generating reasoning plan...")
         """
         Planning — understand intent and design an execution strategy.
         """
+        logger.info("Generating reasoning plan")
         chat_history = format_previous_attempts(previous_attempts)
 
         planning_prompt = (
@@ -61,6 +61,7 @@ class PlanAndSolve(AgentInterface):
         """
         Solving — Generate the final Diplomatic Report based on the reasoning plan.
         """
+        logger.info("Generating solution from plan")
         chat_history = format_previous_attempts(previous_attempts)
 
         solving_prompt = (

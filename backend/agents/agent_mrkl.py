@@ -1,6 +1,6 @@
 from loguru import logger
 
-from agent_interface import AgentInterface, format_previous_attempts
+from backend.agents.agent_interface import AgentInterface, format_previous_attempts
 from llms.llm_interface import LllmInterface
 
 

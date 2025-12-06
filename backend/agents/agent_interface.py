@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from llms.llm_interface import LllmInterface
+from backend.llms.llm_interface import LllmInterface
 
 
 class AgentInterface(ABC):
@@ -24,4 +24,3 @@ def format_previous_attempts(previous_attempts: list[dict] | None) -> str:
         formatted += f"- Answer: {attempt.get('Output', 'N/A')}\n"
     formatted += "</previous attempt>\n"
     return formatted
-

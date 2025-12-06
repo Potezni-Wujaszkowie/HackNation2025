@@ -1,7 +1,9 @@
-from llms.llm_interface import LllmInterface
-from llms.llm_gemini import LlmGemini
-from summary_cache import SummaryCache
-from agents.agent_plan_and_solve import PlanAndSolve
+from loguru import logger
+
+from backend.llms.llm_interface import LllmInterface
+from backend.llms.llm_gemini import LlmGemini
+from backend.summary_cache import SummaryCache
+from backend.agents.agent_plan_and_solve import PlanAndSolve
 
 import yaml
 
@@ -23,8 +25,9 @@ def main():
     documents: dict = {} # taken from the scrapping stage
     for id, document in documents:
         summary_cache.add_to_cache(id, generate_brief(chosen_llm, document, config_file["max_brief_words"]))
+    logger.info("Briefs added to the SummaryCache")
 
-    with open("atlantis_context.txt", "r") as f:
+    with open("./backend/atlantis_context.txt", "r") as f:
         context = f.read()
 
     agent = PlanAndSolve()
@@ -34,8 +37,9 @@ def main():
         brief_prompts=str(summary_cache.cache),
         user_prompt="Generate a strategic report on potential economic threats to Atlantis over the next 5 years based on the provided intelligence briefs."
     )
-    print(out)
+    logger.info(f"Foreseeing done with agent: {agent.name()} and llm: {chosen_llm.name()}.")
 
+    print(out.text)
 
 if __name__ == "__main__":
     main()
