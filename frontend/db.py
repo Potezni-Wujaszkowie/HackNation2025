@@ -27,6 +27,7 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             typ TEXT NOT NULL,   -- 'url' lub 'file'
             nazwa TEXT NOT NULL,    -- ścizka do pliku lub url
+            opis TEXT,
             waga REAL,
             data TEXT
         )
@@ -37,12 +38,12 @@ def init_db():
 
 
 # --- CRUD tab1 ---
-def add_source(typ, nazwa, waga):
+def add_source(typ, nazwa, opis, waga):
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     c.execute(
-        "INSERT INTO sources (typ, nazwa, waga, data) VALUES (?, ?, ?, ?)",
-        (typ, nazwa, float(waga), datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+        "INSERT INTO sources (typ, nazwa, opis, waga, data) VALUES (?, ?, ?, ?, ?)",
+        (typ, nazwa, opis, float(waga), datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
     )
     conn.commit()
     conn.close()
@@ -51,7 +52,7 @@ def add_source(typ, nazwa, waga):
 def get_sources():
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
-    c.execute("SELECT id, typ, nazwa, waga, data FROM sources ORDER BY id")
+    c.execute("SELECT id, typ, nazwa, opis, waga, data FROM sources ORDER BY id")
     rows = c.fetchall()
     conn.close()
     return rows
@@ -61,6 +62,14 @@ def update_source_waga(source_id, new_waga):
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     c.execute("UPDATE sources SET waga=? WHERE id=?", (float(new_waga), source_id))
+    conn.commit()
+    conn.close()
+
+
+def update_source_opis(source_id, new_opis):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("UPDATE sources SET opis=? WHERE id=?", (new_opis, source_id))
     conn.commit()
     conn.close()
 
