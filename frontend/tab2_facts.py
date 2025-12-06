@@ -38,15 +38,11 @@ def tab2_view():
         col_src, col_sort = st.columns([0.5, 0.5])
         with col_src:
             filter_src = st.text_input(
-                "Filtruj po nazwie źródła",
-                value="",
-                key="filter_src"
+                "Filtruj po nazwie źródła", value="", key="filter_src"
             )
         with col_sort:
             sort_order = st.selectbox(
-                "Sortuj wg daty:",
-                ["Od najnowszej", "Od najstarszej"],
-                key="sort_date"
+                "Sortuj wg daty:", ["Od najnowszej", "Od najstarszej"], key="sort_date"
             )
 
         fakty = get_all_fakty()
@@ -57,7 +53,6 @@ def tab2_view():
                 filtered_facts.append(fakt)
 
         filtered_facts.sort(key=lambda x: x[4], reverse=(sort_order == "Od najnowszej"))
-
 
         selected_ids = []
         if not filtered_facts:

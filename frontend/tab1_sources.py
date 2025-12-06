@@ -34,7 +34,7 @@ def tab1_view():
 
         if uploaded_file and st.button("+ Dodaj plik"):
             file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
-            
+
             with open(file_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
