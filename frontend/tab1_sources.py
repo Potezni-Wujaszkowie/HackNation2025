@@ -21,7 +21,7 @@ def tab1_view():
             "Nowy adres:", placeholder="https://przykladowa_strona.pl"
         )
         new_tab1_url_desc = st.text_input("Opis:", "")
-        if st.button("+ Dodaj URL"):
+        if st.button("➕ Dodaj URL"):
             if new_tab1_url.strip():
                 add_source("url", new_tab1_url.strip(), new_tab1_url_desc, 0.0)
                 st.success("Dodano URL!")
@@ -32,7 +32,7 @@ def tab1_view():
         new_file_weight = st.number_input("Waga pliku", 0.0, 100.0, 0.0, 0.01)
         new_file_desc = st.text_input("Opis:", "")
 
-        if uploaded_file and st.button("+ Dodaj plik"):
+        if uploaded_file and st.button("➕ Dodaj plik"):
             file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.name)
 
             with open(file_path, "wb") as f:
@@ -62,6 +62,6 @@ def tab1_view():
                 update_source_waga(source_id, new_waga)
                 st.rerun()
         with col5:
-            if st.button("🗑️ Usuń", key=f"tab1_del_source_{source_id}"):
+            if st.button("❌ Usuń", key=f"tab1_del_source_{source_id}"):
                 delete_source(source_id)
                 st.rerun()

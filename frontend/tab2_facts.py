@@ -24,7 +24,7 @@ def tab2_view():
         fakt = st.text_area("Fakt")
         weight = st.number_input("Waga", 0.0, 100.0, value=0.0, step=0.01)
 
-        if st.button("Dodaj fakt"):
+        if st.button("➕ Dodaj fakt"):
             if fakt.strip():
                 add_fakt(fakt, "Dodane przez użytkownika", weight)
                 st.success("Dodano fakt do bazy!")
