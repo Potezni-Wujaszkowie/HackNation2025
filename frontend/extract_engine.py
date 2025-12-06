@@ -23,24 +23,11 @@ def extract_text_from_docx(docx_path):
     return text
 
 
-def chunk_text(text, chunk_size=CHUNK_SIZE_WORDS):
-    words = text.split()
-    chunks = []
-    for i in range(0, len(words), chunk_size):
-        chunk = " ".join(words[i : i + chunk_size])
-        chunks.append(chunk)
-    return chunks
-
-
-def save_chunks(chunks, file_base_name):
-    # folder: uploads_text/[nazwa_pliku]/
-    output_dir = os.path.join(TEXT_OUTPUT_FOLDER, file_base_name)
-    os.makedirs(output_dir, exist_ok=True)
-
-    for idx, chunk in enumerate(chunks, start=1):
-        chunk_file = os.path.join(output_dir, f"{idx}.txt")
-        with open(chunk_file, "w", encoding="utf-8") as f:
-            f.write(chunk)
+def save_full_text(text, file_base_name):
+    # folder: uploads_text/[nazwa_pliku].txt
+    output_file = os.path.join(TEXT_OUTPUT_FOLDER, f"{file_base_name}.txt")
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(text)
 
 
 def process_file(file_path):
@@ -55,8 +42,5 @@ def process_file(file_path):
         print(f"Nieobsługiwany format: {file_path}")
         return
 
-    chunks = chunk_text(text)
-    save_chunks(chunks, file_base_name)
-    print(
-        f"Przetworzono {file_name} -> {len(chunks)} chunków w {TEXT_OUTPUT_FOLDER}/{file_base_name}/"
-    )
+    save_full_text(text, file_base_name)
+    print(f"Przetworzono {file_name}, zapisano cały tekst w {TEXT_OUTPUT_FOLDER}/{file_base_name}.txt")

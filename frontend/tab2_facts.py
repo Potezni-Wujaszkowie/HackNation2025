@@ -2,6 +2,64 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from db import add_fakt, init_db, get_all_fakty, update_waga, delete_fakt
+from loguru import logger
+from extract_engine import TEXT_OUTPUT_FOLDER
+import os
+from backend.llms.llm_interface import LllmInterface
+from backend.llms.llm_gemini import LlmGemini
+from backend.summary_cache import SummaryCache
+from backend.agents.agent_plan_and_solve import PlanAndSolve
+import yaml
+
+def generate_brief(llm: LllmInterface, document: str, max_words: int) -> str:
+    prompt = f'Używając maksymalnie {max_words} słów wygeneruj streszczenie'
+    f'poniższego dokumentu (uwzględnij jak najwięcej faktów, liczb oraz konkretów):\n\n{document}'
+    return llm.generate_response(prompt)
+
+
+def generate_AI_output(context_paths):
+
+    
+    with open("config.yaml", "r") as f:
+        config_file = yaml.safe_load(f)
+
+    llms = {
+        LlmGemini.name(): LlmGemini()
+    }
+
+    chosen_llm = llms[LlmGemini.name()]
+    summary_cache = SummaryCache()
+    documents: dict = {} # taken from the scrapping stage
+
+    shorts = []
+    for context_path in context_paths:
+        with open(context_path, "r", encoding="utf-8") as f:
+            document = f.read()
+
+        shorts.append(generate_brief(chosen_llm, document, config_file["max_brief_words"]))
+
+    return shorts
+
+    # shorts = []
+    # for id, document in documents:
+        
+    
+    # logger.info("Briefs added to the SummaryCache")
+
+    # #TODO tutaj pętla po context_path i scalenie ich do jednej zmiennej context
+    # with open(context_path, "r") as f:
+    #     context = f.read()
+
+    # agent = PlanAndSolve()
+    # out = agent.run(
+    #     llm=llms[LlmGemini.name()],
+    #     context=context,
+    #     brief_prompts=str(summary_cache.cache),
+    #     user_prompt="Generate a strategic report on potential economic threats to Atlantis over the next 5 years based on the provided intelligence briefs."
+    # )
+    # logger.info(f"Foreseeing done with agent: {agent.name()} and llm: {chosen_llm.name()}.")
+
+    # print(out.text)
 
 
 def tab2_view():
@@ -106,6 +164,24 @@ def tab2_view():
                     if st.button("❌ Usuń", key=f"tab2_del_fact_{fakt_id}"):
                         delete_fakt(fakt_id)
                         st.rerun()
+        
+        if st.button("GENERATE", key=f"tab2_generate_facts"):
+            # tutaj chce pętle która która do listy zapisze wszystkie ścieżki do plików z folderu TEXT_OUTPUT_FOLDER
+            context_paths = []
+
+            for file_name in os.listdir(TEXT_OUTPUT_FOLDER):
+                if file_name.endswith(".txt"):
+                    context_path = os.path.join(TEXT_OUTPUT_FOLDER, file_name)
+                    context_paths.append(context_path)
+
+            shorts = generate_AI_output(context_paths)
+            st.write("Shorts: ", shorts)
+
+            
+            
+            
+            st.success("Wygenerowano odpowidź na podstawie zaznaczonych faktów.")
 
         if selected_ids:
-            st.write("Zaznaczone ID:", selected_ids)
+            st.write("Shorts: ", shorts)
+            # st.write("Zaznaczone ID:", selected_ids)

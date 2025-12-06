@@ -1,5 +1,6 @@
 import streamlit as st
 from db import init_db, add_source, get_sources, update_source_waga, delete_source
+from extract_engine import process_file
 import os
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
@@ -39,6 +40,7 @@ def tab1_view():
                 f.write(uploaded_file.getbuffer())
 
             add_source("file", file_path, new_file_desc, new_file_weight)
+            process_file(file_path)
             st.success(f"Dodano plik: {uploaded_file.name}")
 
     st.markdown("---")
