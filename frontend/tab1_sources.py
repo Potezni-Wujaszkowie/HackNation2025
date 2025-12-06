@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+
 def tab1_view():
     
     chosen_option = st.radio(
@@ -8,7 +9,6 @@ def tab1_view():
         ["Dodaj URL", "Dodaj plik"], 
         horizontal=True
     )
-    
 
     if chosen_option == "Dodaj URL":
         if "tab1_urls" not in st.session_state:
