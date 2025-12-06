@@ -6,11 +6,9 @@ from tab3_analysis import tab3_view
 
 st.title("Analiza źródeł")
 
-tab1, tab2, tab3 = st.tabs([
-    "1. Źródła wymagające kompresji",
-    "2. Streszczenie i fakty",
-    "3. Analiza"
-])
+tab1, tab2, tab3 = st.tabs(
+    ["1. Źródła wymagające kompresji", "2. Streszczenie i fakty", "3. Analiza"]
+)
 
 with tab1:
     tab1_view()

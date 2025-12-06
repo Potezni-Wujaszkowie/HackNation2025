@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
 
+
 def tab1_view():
     chosen_option = st.radio(
-        "Wybierz opcję dodawania:",
-        ["Dodaj URL", "Dodaj plik"], 
-        horizontal=True
+        "Wybierz opcję dodawania:", ["Dodaj URL", "Dodaj plik"], horizontal=True
     )
 
     if chosen_option == "Dodaj URL":
@@ -16,7 +15,7 @@ def tab1_view():
         new_tab1_url = st.text_input(
             "Nowy adres:",
             placeholder="https://przykladowa_strona.pl",
-            key="tab1_new_url_input"
+            key="tab1_new_url_input",
         )
 
         if st.button("+ Dodaj URL", key="tab1_add_url_btn", type="primary"):
@@ -39,10 +38,11 @@ def tab1_view():
                 with col2:
                     new_weight = st.number_input(
                         "Waga",
-                        min_value=0.0, max_value=100.0,
+                        min_value=0.0,
+                        max_value=100.0,
                         value=weight,
                         step=0.01,
-                        key=f"tab1_weight_{i}"
+                        key=f"tab1_weight_{i}",
                     )
                     if new_weight != weight:
                         st.session_state.tab1_urls[i][1] = new_weight
