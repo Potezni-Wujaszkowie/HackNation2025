@@ -1,12 +1,21 @@
 from llm_gemini import LlmGemini
+from summary_cache import SummaryCache
 
 
 def main():
-    llm = LlmGemini()
-    prompt = "Wytłumacz, czym jest kwantowa spójność w jednym zdaniu."
-    response = llm.generate_response(prompt)
+    summary_cache = SummaryCache()
+    llms = {
+        LlmGemini.name(): LlmGemini()
+    }
+    msz_prompt = "" # from frontends
+    with open("phase1_prompt.txt", "r") as f:
+        system_prompt = f.read()
+    for document in summary_cache.cache.keys():
+        ph1_prompt += f"\n- {document}"
+
+    response = llms[LlmGemini.name()].generate_response(prompt)
     print("--- Zapytanie ---")
-    print(prompt)
+    print(ph1_prompt)
     print("\n--- Odpowiedź Gemini ---")
     print(response.text)
 
