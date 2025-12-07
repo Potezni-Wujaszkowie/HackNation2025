@@ -51,7 +51,7 @@ class PlanAndSolve(AgentInterface):
             f"- **Rozwiązywanie Konfliktów:** Jeśli dokumenty są sprzeczne, wskaż, że wybierasz wersję z dokumentu o wyższej wadze.\n"
             f"- **Szkic Scenariuszy:** Główne tezy oparte na priorytetowych danych.\n\n"
 
-            f"Wygeneruj teraz plan rozumowania."
+            f"Wygeneruj teraz plan rozumowania ({hiperparams['type']} scenariusz) w języku polskim dla horyzontu czasowego {hiperparams['time']} miesięcy w przód."
         )
 
         return llm.generate_response(planning_prompt)

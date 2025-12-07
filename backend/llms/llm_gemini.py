@@ -8,7 +8,7 @@ from loguru import logger
 load_dotenv(find_dotenv())
 
 class LlmGemini(LllmInterface):
-    def __init__(self, model: str = "gemini-2.5-flash"):
+    def __init__(self, model: str = "gemini-2.5-flash-lite"):
         if not os.getenv("GEMINI_API_KEY"):
             raise RuntimeError("GEMINI_API_KEY not set in environment variables.")
 
