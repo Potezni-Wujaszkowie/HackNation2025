@@ -10,6 +10,7 @@ import yaml
 from db import add_fakt
 import time
 from backend.agent_manager import AgentManager
+from scraper import crawl_website, urlparse
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -51,6 +52,14 @@ def tab1_view(llm_manager):
             if new_tab1_url.strip():
                 add_source("url", new_tab1_url.strip(), new_tab1_url_desc, 0.0)
                 st.success("Dodano URL!")
+                crawl_website(new_tab1_url.strip(), 0)
+                parsed_url = urlparse(new_tab1_url.strip())
+                filename_part = parsed_url.netloc + parsed_url.path.replace('/', '_')
+                if not filename_part or filename_part.endswith('_'):
+                    filename_part += "index"
+                file_path = os.path.join("./uploads_text", f"{filename_part}.txt")
+                generate_AI_output(file_path, llm_manager, 10)
+
 
     else:
         st.subheader("Dodaj plik (drag & drop)")
