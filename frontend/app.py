@@ -7,10 +7,10 @@ from tab2_facts import tab2_view
 from tab3_analysis import tab3_view
 
 def main():
-    st.title("Analiza źródeł")
+    st.title("Cyfrowy Wieszcz")
 
     tab1, tab2, tab3 = st.tabs(
-        ["1. Źródła wymagające kompresji", "2. Streszczenia i fakty", "3. Analiza"]
+        ["1. Źródła", "2. Fakty i założenia", "3. Przewidywania i analiza"]
     )
 
     with tab1:

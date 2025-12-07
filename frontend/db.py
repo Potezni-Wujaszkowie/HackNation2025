@@ -1,3 +1,4 @@
+
 import sqlite3
 from datetime import datetime
 
@@ -101,6 +102,15 @@ def get_all_fakty():
     rows = c.fetchall()
     conn.close()
     return rows
+
+
+def get_fakt_by_id(fakt_id):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("SELECT id, fakt, zrodlo, waga, data FROM fakty WHERE id=?", (fakt_id,))
+    row = c.fetchone()
+    conn.close()
+    return row
 
 
 def update_waga(fakt_id, new_waga):
