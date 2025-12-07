@@ -50,13 +50,14 @@ class AgentManager:
         prompt = f'Używając maksymalnie {max_words} słów wygeneruj streszczenie poniższego dokumentu (uwzględnij jak najwięcej faktów, liczb oraz konkretów; WAŻNE: jeśli dokument nie niesie większej wartości merytorycznej po prostu zwróć pusty string):\n\n{document}'
         return self.llm.generate_response(prompt)
 
-    def generate_data_summary(self, briefs_with_weights: list[tuple[int, str]], max_words: int) -> str:
+    def generate_data_summary(self, briefs_with_weights: list[tuple[int, str, str]], max_words: int) -> str:
         logger.info("Generating data summary from briefs with weights")
         formatted_context = ""
-        for weight, text in briefs_with_weights:
+
+        for weight, text, source in briefs_with_weights:
             if not text or text.strip() == "":
                 continue
-            formatted_context += f"[WAGA DOKUMENTU: {weight}] TREŚĆ: {text}\n\n"
+            formatted_context += f"[WAGA: {weight}] [ŹRÓDŁO: {source}] TREŚĆ: {text}\n\n"
 
         if not formatted_context:
             return "Brak danych do wygenerowania streszczenia."
@@ -70,12 +71,12 @@ class AgentManager:
 
             f"### INSTRUKCJE:\n"
             f"1. **Synteza, nie lista:** Nie wymieniaj dokumentów po kolei. Stwórz spójny, narracyjny obraz sytuacji wyłaniający się z tych danych.\n"
-            f"2. **Hierarchia Ważności (KLUCZOWE):** Narrację buduj WYŁĄCZNIE na informacjach z dokumentów o wysokiej wadze (np. 8-10). Dokumenty o niskiej wadze traktuj tylko jako tło lub ciekawostkę.\n"
-            f"3. **Przejrzystość (User-Friendly):** Tekst ma być zrozumiały dla Ambasadora w 30 sekund. Używaj języka prostego, konkretnego.\n"
+            f"2. **Hierarchia Ważności:** Narrację buduj na informacjach z dokumentów o wysokiej wadze.\n"
+            f"3. **Przejrzystość:** Tekst ma być zrozumiały w 30 sekund.\n"
             f"4. **Ograniczenia:**\n"
             f"   - Maksymalnie **{max_words} słów**.\n"
             f"   - Język: Polski, profesjonalny.\n"
-            f"   - Styl: 2-3 konkretne akapity (bez nagłówków, bez wstępów typu 'Oto streszczenie').\n\n"
+            f"   - Styl: 2-3 konkretne akapity.\n\n"
 
             f"Wygeneruj teraz syntetyczne streszczenie danych."
         )
@@ -89,41 +90,29 @@ class AgentManager:
 
         recommendation_prompt = (
             f"Działasz jako Główny Doradca Strategiczny Rządu Atlantis. "
-            f"Twoim zadaniem jest sformułowanie konkretnych rekomendacji decyzyjnych w oparciu o przeprowadzoną analizę scenariuszową.\n\n"
+            f"Twoim zadaniem jest sformułowanie konkretnych rekomendacji decyzyjnych w oparciu o analizę scenariuszową.\n\n"
 
-            f"### BAZA WIEDZY (PROFIL ATLANTIS):\n{system_prompt}\n\n"
-
-            f"### DANE ŹRÓDŁOWE (DOWODY):\n{brief_prompts}\n\n"
-
-            f"### WYNIKI ANALIZY (SCENARIUSZE):\n"
-            f"Poniżej znajdują się 4 wygenerowane warianty przyszłości, które musisz wziąć pod uwagę:\n"
-            f"{generated_scenarios_text}\n\n"
+            f"### BAZA WIEDZY:\n{system_prompt}\n\n"
+            f"### DANE ŹRÓDŁOWE (Z PODANYM POLAMI 'ŹRÓDŁO'):\n{brief_prompts}\n\n"
+            f"### SCENARIUSZE:\n{generated_scenarios_text}\n\n"
 
             f"### ZADANIE:\n"
-            f"Napisz **SEKCJĘ C: REKOMENDACJE DLA PAŃSTWA ATLANTIS**.\n"
-            f"Podziel ją wyraźnie na dwie części:\n\n"
+            f"Napisz **SEKCJĘ C: REKOMENDACJE** (Defensywne i Ofensywne).\n\n"
 
-            f"**CZĘŚĆ 1: Strategia Defensywna (Unikanie Scenariuszy Negatywnych)**\n"
-            f"- Jakie konkretne decyzje polityczne, gospodarcze lub militarne należy podjąć natychmiast, aby zminimalizować ryzyka zidentyfikowane w scenariuszach negatywnych?\n"
-            f"- Odnieś się do słabych punktów Atlantis (woda, sąsiad, embargo).\n\n"
+            f"### WYMOGI CYTOWANIA:\n"
+            f"- Uzasadniając rekomendację, powołaj się na konkretne `ŹRÓDŁO` z danych (np. 'Zgodnie z ostrzeżeniami zawartymi w [Źródło: wywiad_mosad.txt], należy wzmocnić cyberbezpieczeństwo').\n"
+            f"- NIE wspominaj o 'wagach' dokumentów w tekście wynikowym.\n\n"
 
-            f"**CZĘŚĆ 2: Strategia Ofensywna (Realizacja Scenariuszy Pozytywnych)**\n"
-            f"- Jakie działania przyspieszą realizację ambicji Atlantis (AI, OZE, surowce)?\n"
-            f"- Jak wykorzystać szanse międzynarodowe opisane w scenariuszach pozytywnych?\n\n"
-
-            f"### WYMOGI:\n"
-            f"1. **Konkretność:** Nie pisz ogólników ('trzeba rozwijać gospodarkę'). Pisz konkretnie: 'Należy zdywersyfikować dostawy procesorów poprzez umowę z [KRAJ]'.\n"
-            f"2. **Cytowania:** Tam gdzie to możliwe, powołaj się na dokumenty źródłowe [DOC_ID], które uzasadniają konieczność działania.\n"
-            f"3. **Format:** Wypunktowana lista z pogrubieniami kluczowych działań.\n"
-            f"4. **Język:** Polski, dyplomatyczny, dyrektywny.\n\n"
-
-            f"Wygeneruj teraz Sekcję C."
+            f"Wygeneruj teraz Sekcję C w języku polskim."
         )
         return self.llm.generate_response(recommendation_prompt)
 
     @staticmethod
-    def compose_briefs_with_weights(weigths_briefs: list[tuple[int, str]]) -> str:
-        return "\n\n".join([f"WAGA: {weight}; STRESZCZENIE: {brief}" for weight, brief in weigths_briefs])
+    def compose_briefs_with_weights(weigths_briefs: list[tuple[int, str, str]]) -> str:
+        return "\n\n".join([
+            f"WAGA: {weight}; STRESZCZENIE: {brief}; ŹRÓDŁO: {source}"
+            for weight, brief, source in weigths_briefs
+        ])
 
     def generate_scenarios_and_summary(self, briefs: list[tuple[int, str, str]]):
         briefs_with_weights = [(weight, brief) for weight, brief, _ in briefs]

@@ -1,6 +1,6 @@
 from loguru import logger
 
-from backend.agents.agent_interface import AgentInterface, format_previous_attempts
+from backend.agents.agent_interface import AgentInterface
 from backend.llms.llm_interface import LllmInterface
 
 
@@ -15,7 +15,6 @@ class PlanAndSolve(AgentInterface):
         reasoning_plan = self.plan(llm, hiperparams, context, merged_briefs)
         return self.solve(llm, hiperparams, reasoning_plan, merged_briefs)
 
-    @staticmethod
     def plan(
         llm: LllmInterface, hiperparams: dict, system_prompt: str, merged_briefs: str
     ) -> str:
@@ -25,27 +24,25 @@ class PlanAndSolve(AgentInterface):
         logger.info("Generating reasoning plan")
         planning_prompt = (
             f"Jesteś Głównym Analitykiem Strategicznym Republiki Atlantis. "
-            f"Twoim zadaniem jest przeanalizowanie ważonych danych wywiadowczych i stworzenie PLANU ROZUMOWANIA.\n\n"
+            f"Twoim zadaniem jest przeanalizowanie danych wywiadowczych i stworzenie PLANU ROZUMOWANIA dla scenariusza: {hiperparams['type']} ({hiperparams['time']} mies.).\n\n"
 
             f"### KONTEKST STATYCZNY (PROFIL ATLANTIS):\n{system_prompt}\n\n"
 
-            f"### DANE WEJŚCIOWE Z WAGAMI (PRIORYTETY):\n"
-            f"Format danych to: 'WEIGHT: [Wartość] BRIEF: [Treść]'.\n"
+            f"### DANE WEJŚCIOWE (Z WAGAMI I ŹRÓDŁAMI):\n"
+            f"Format danych: 'WAGA: [1-10]; STRESZCZENIE: [...]; ŹRÓDŁO: [Nazwa Pliku/Instytucji]'.\n"
             f"{merged_briefs}\n\n"
 
             f"### INSTRUKCJE ANALITYCZNE:\n"
-            f"1. **ANALIZA WAG (KLUCZOWE):** Zwróć szczególną uwagę na parametr `WEIGHT` przy każdym streszczeniu.\n"
-            f"   - **Wysoka waga:** Informacje te są krytyczne, pewne i nadrzędne. Muszą stanowić fundament scenariuszy.\n"
-            f"   - **Niska waga:** Informacje pomocnicze. W razie sprzeczności z dokumentem o wyższej wadze – ignoruj je.\n"
-            f"2. Zidentyfikuj intencję użytkownika (Raport vs Czat).\n"
-            f"3. Stwórz plan w JĘZYKU POLSKIM.\n\n"
+            f"1. **FILTR WAG (LOGIKA WEWNĘTRZNA):** Użyj parametru `WAGA` do oceny wiarygodności. Informacje z wagą wysoką (8-10) są pewnikami. Informacje z wagą niską (1-3) traktuj ostrożnie.\n"
+            f"2. **SELEKCJA ŹRÓDEŁ:** Wybierz konkretne `ŹRÓDŁA`, które potwierdzają tezy dla scenariusza {hiperparams['type']}.\n"
+            f"3. **PLAN:** Stwórz plan w JĘZYKU POLSKIM.\n\n"
 
             f"W swoim planie uwzględnij:\n"
-            f"- **Filtr Istotności:** Wymień ID dokumentów o NAJWYŻSZEJ wadze, na których oprzesz analizę.\n"
-            f"- **Rozwiązywanie Konfliktów:** Jeśli dokumenty są sprzeczne, wskaż, że wybierasz wersję z dokumentu o wyższej wadze.\n"
-            f"- **Szkic Scenariuszy:** Główne tezy oparte na priorytetowych danych.\n\n"
+            f"- **Kluczowe Fakty:** Jakie konkretne informacje ze streszczeń wykorzystasz?\n"
+            f"- **Weryfikacja Źródeł:** Przy każdym fakcie zanotuj sobie `ŹRÓDŁO` (np. 'raport_NATO.pdf'), które zacytujesz w finale.\n"
+            f"- **Logika Scenariusza:** Jak te fakty prowadzą do {hiperparams['type']} rozwoju wydarzeń w ciągu {hiperparams['time']} miesięcy?\n\n"
 
-            f"Wygeneruj teraz plan rozumowania ({hiperparams['type']} scenariusz) w języku polskim dla horyzontu czasowego {hiperparams['time']} miesięcy w przód."
+            f"Wygeneruj teraz plan rozumowania."
         )
 
         return llm.generate_response(planning_prompt)
@@ -61,35 +58,29 @@ class PlanAndSolve(AgentInterface):
 
         solving_prompt = (
             f"Działasz jako Sekretarz ds. Raportów Dyplomatycznych Republiki Atlantis. "
-            f"Twoim celem jest wykonanie przygotowanego planu i wygenerowanie finalnej odpowiedzi dla Ambasadora.\n\n"
+            f"Twoim celem jest wygenerowanie treści scenariusza strategicznego na podstawie planu.\n\n"
 
             f"### BAZA WIEDZY (PROFIL ATLANTIS):\n{system_prompt}\n\n"
 
-            f"### DANE ŹRÓDŁOWE Z WAGAMI (PRIORYTETY):\n"
-            f"Format: 'WEIGHT: [Wartość] BRIEF: [Treść]'.\n"
-            f"{brief_prompts}\n\n"
+            f"### DANE ŹRÓDŁOWE:\n{brief_prompts}\n\n"
 
-            f"### PLAN ANALITYKA (TWOJE WYTYCZNE):\n{plan}\n\n"
+            f"### PLAN ANALITYKA:\n{plan}\n\n"
 
-            f"### INSTRUKCJE WYKONAWCZE:\n"
-            f"1. **Hierarchia Ważności:** Budując narrację, opieraj główne tezy na dokumentach o najwyższej wadze (`WEIGHT`). Informacje o niskiej wadze traktuj jako tło lub niepotwierdzone sygnały.\n"
-            f"2. Jeśli plan zakłada **Pełny Raport**, zachowaj strukturę:\n"
-            f"   - SEKCJA A: Streszczenie Wykonawcze\n"
-            f"   - SEKCJA B: Scenariusze Strategiczne (Narracja + Wyjaśnienie przyczyn)\n"
-            f"   - SEKCJA C: Rekomendacje (Ofensywne/Defensywne)\n"
-            f"3. Jeśli plan zakłada **Odpowiedź na Pytanie** (tryb czatu), udziel konkretnej odpowiedzi merytorycznej.\n"
-            f"4. **JĘZYK:** Cała odpowiedź musi być w profesjonalnym **JĘZYKU POLSKIM**.\n\n"
+            f"### ZADANIE:\n"
+            f"Napisz treść scenariusza: **{hiperparams['type'].upper()}** na okres **{hiperparams['time']} MIESIĘCY**.\n\n"
 
-            f"### KRYTYCZNE ZASADY:\n"
-            f"- **Wyjaśnialność (Explainability):** KAŻDE stwierdzenie oparte na faktach musi zawierać przypis do ID źródła (np. [DOC_01]).\n"
-            f"- **Wagi a Język Pewności (Kluczowe):** Dostosuj stopień stanowczości do wagi źródła.\n"
-            f"    - **Wysoka waga:** Używaj sformułowań pewnych: 'Zagrożenie jest krytyczne', 'Dane potwierdzają', 'Jest wysoce prawdopodobne'.\n"
-            f"    - **Niska waga:** Używaj trybu przypuszczającego: 'Istnieją przesłanki', 'Wymaga weryfikacji', 'Możliwy scenariusz', 'Według niepotwierdzonych doniesień'.\n"
-            f"- **Ton:** Profesjonalny, dyplomatyczny, bezstronny.\n"
-            f"- **Formatowanie:** NIE używaj nagłówków typu 'Do:', 'Od:', 'Data:'. Zacznij od razu od treści raportu (np. '**SEKCJA A...**') lub bezpośredniej odpowiedzi.\n"
-            f"- **Ciągłość:** Jeśli użytkownik prosi o poprawkę, uwzględnij historię rozmowy.\n\n"
+            f"### STRUKTURA ODPOWIEDZI:\n"
+            f"1. **Narracja Scenariusza:** Opis wydarzeń (co się wydarzy?).\n"
+            f"2. **Analiza Korelacji i Przyczynowości:** Wyjaśnienie dlaczego tak się stanie, bazując na faktach.\n\n"
 
-            f"Wygeneruj teraz finalną treść ({hiperparams['type']} scenariusz) w języku polskim dla horyzontu czasowego {hiperparams['time']} miesięcy w przód."
+            f"### KRYTYCZNE ZASADY CYTOWANIA (BEZWZGLĘDNE):\n"
+            f"1. **NIE CYTUJ WAG:** Nigdy nie pisz 'Waga 10 potwierdza...'. Użytkownik końcowy nie widzi wag.\n"
+            f"2. **CYTUJ ŹRÓDŁA:** Każde kluczowe stwierdzenie musi kończyć się przypisem w nawiasie wskazującym na `ŹRÓDŁO`.\n"
+            f"   - ŹLE: 'Gospodarka spowolni (Waga 9).'\n"
+            f"   - DOBRZE: 'Gospodarka spowolni, co wynika z prognoz MFW [Źródło: raport_mfw_2024.pdf].'\n"
+            f"3. **Wiarygodność:** Jeśli opierasz się na źródle o wysokiej wadze (którą znasz z danych wejściowych), używaj języka pewności ('Jest pewne, że...'). Jeśli na niskiej - języka przypuszczeń.\n\n"
+
+            f"Wygeneruj teraz tekst scenariusza w języku polskim."
         )
 
         return llm.generate_response(solving_prompt)
