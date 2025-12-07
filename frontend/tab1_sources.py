@@ -9,50 +9,30 @@ from backend.agents.agent_plan_and_solve import PlanAndSolve
 import yaml
 from db import add_fakt
 import time
-# from logguru import logger
-from main import generate_brief
+from backend.agent_manager import AgentManager
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-def generate_AI_output(context_path):
+def generate_AI_output(context_path, llm_manager: AgentManager, weight: float):
     """
     Logika generowania outputu AI na podstawie podanej ścieżki kontekstu, używa funkcji generate_brief do tworzenia faktów.
     
     :param context_path: Description
     """
-    st.write("context_paths w funkcji generate_AI_output:", context_path)
+    # st.write("context_paths w funkcji generate_AI_output:", context_path)
 
-    with open("config.yaml", "r") as f:
-        config_file = yaml.safe_load(f)
-
-    llms = {
-        LlmGemini.name(): LlmGemini()
-    }
-
-    chosen_llm = llms[LlmGemini.name()]
-    # summary_cache = SummaryCache()
-    # documents: dict = {} # taken from the scrapping stage
-
-    # shorts = []
-    # for context_path in context_paths:
     with open(context_path, "r", encoding="utf-8") as f:
         document = f.read()
 
-    st.write("document w generate_AI_output:", document)
+    # st.write("document w generate_AI_output:", document)
+    fakt = llm_manager.generate_brief(document, 250).candidates[0].content.parts[0].text
 
-    fakt = generate_brief(chosen_llm, document, config_file["max_brief_words"]).candidates[0].content.parts[0].text
-    # logger.info("Generated fact from file %s: %s", context_path.name, fakt)
-
-
-    st.write("Generated fact from file", context_path.name, ":", generate_brief(chosen_llm, document, config_file["max_brief_words"]))
-    st.write("Generated fact:", fakt)
-    weight = 0.0
-    add_fakt(fakt, os.path.splitext(context_path.name)[0], weight)
+    add_fakt(fakt, os.path.splitext(os.path.basename(context_path))[0], weight)
 
 
-def tab1_view():
+def tab1_view(llm_manager):
     st.header("Źródła")
 
     init_db()
@@ -93,7 +73,7 @@ def tab1_view():
             file_name_without_ext = os.path.splitext(uploaded_file.name)[0]
             file_name_txt = file_name_without_ext + ".txt"
             context_path = os.path.join(output_path, file_name_txt)
-            fact_text = generate_AI_output(context_path) 
+            fact_text = generate_AI_output(context_path, llm_manager, new_file_weight) 
 
 
 

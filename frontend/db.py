@@ -34,6 +34,16 @@ def init_db():
         )
     """
     )
+    # przewidywania i analizy (tab3)
+    c.execute(
+        """
+        CREATE TABLE IF NOT EXISTS predictions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            path TEXT NOT NULL,  
+            data TEXT
+        )
+    """
+    )
     conn.commit()
     conn.close()
 
@@ -125,5 +135,16 @@ def delete_fakt(fakt_id):
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
     c.execute("DELETE FROM fakty WHERE id=?", (fakt_id,))
+    conn.commit()
+    conn.close()
+
+
+def add_prediction(path, date):
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute(
+        "INSERT INTO predictions (path, data) VALUES (?, ?)",
+        (path, date),
+    )
     conn.commit()
     conn.close()
