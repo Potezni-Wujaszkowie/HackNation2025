@@ -9,7 +9,6 @@ from backend.llms.llm_pllum import LlmPllum
 from tab1_sources import tab1_view
 from tab2_facts import tab2_view
 from tab3_analysis import tab3_view
-from tab0_model import tab0_view
 
 
 def main():

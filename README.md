@@ -16,4 +16,15 @@ Narzędzie realizuje zadania eksploracji danych politycznych, geopolitycznych i 
 ## Źródła wiedzy
 - Przykładowe dane udostępnione przez autorów zadania
 - Publicznie dostępne strony rządowe i organizacji międzynarodowych:
-    - 
+
+
+
+legit_urls = [
+    "https://www.nato.int/en/news-and-events/articles/news/2025/12/04/the-director-general-of-the-international-military-staff-discusses-nato-ukraine-cooperation-with-visiting-ukraine-military-personnel?selectedLocale="
+    , "https://www.nato.int/en/news-and-events/articles/news/2025/11/26/nato-and-ukraine-announce-new-joint-initiative-to-accelerate-defence-innovation-unite-brave-nato?selectedLocale="
+    , "https://www.nato.int/en/news-and-events/articles/news/2025/11/23/nato-deputy-secretary-general-visits-logistical-hub-in-poland-of-the-nato-security-assistance-and-training-for-ukraine?selectedLocale="
+    , "https://www.nato.int/en/news-and-events/articles/news/2025/11/17/nato-allies-wrap-up-major-air-exercise-falcon-strike-2025-in-italy?selectedLocale="
+    , "https://www.gov.pl/web/obrona-narodowa/bojowe-wozy-piechoty-borsuk-wchodza-na-wyposazenie-wojska-polskiego"
+    , "https://www.gov.pl/web/obrona-narodowa/wspolpraca-na-rzecz-bezpieczenstwa-infrastruktury-krytycznej"
+    , "https://www.gov.pl/web/premier/wspolna-deklaracja-podsumowujaca-polsko---niemieckie-konsultacje-miedzyrzadowe"
+]
