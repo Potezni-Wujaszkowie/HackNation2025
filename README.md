@@ -13,11 +13,40 @@ Repozytorium projektu HackNation2025 zawiera rozwiązanie zadania SCENARIUSZE JU
 
 Narzędzie realizuje zadania eksploracji danych politycznych, geopolitycznych i społecznych z różnych źródeł wskazancyh przez autorów zadania. Wykorzystuje techniki przetwarzania języka naturalnego (NLP) do analizy tekstów, udostępnie interfejs użytkownika umożliwiający komunikacje z narzedzieniem.
 
+# HackNation2025
+
+
+Repozytorium projektu HackNation2025 zawiera rozwiązanie zadania SCENARIUSZE JUTRA dla Ministerstwa Spraw Zagranicznych RP w ramach Hackathonu HackNation2025.
+
+## Autorzy
+- Błażej Ejzak
+- Paweł Dombrzalski
+- Bartosz Jaśinski
+- Łukasz Wójcicki
+
+## Opis projektu
+
+Narzędzie realizuje zadania eksploracji danych politycznych, geopolitycznych i społecznych z różnych źródeł wskazancyh przez autorów zadania. Wykorzystuje techniki przetwarzania języka naturalnego (NLP) do analizy tekstów, udostępnie interfejs użytkownika umożliwiający komunikacje z narzedzieniem.
+
+## Uruchomienie projektu
+Do uruchomienia potrzebny jest pakiet [uv](https://docs.astral.sh/uv/). Uruchomienie aplikacji:
+```shell
+uv run frontend/runner.py
+```
+
+## Użyte technologie
+- Python
+- uv
+- streamlit
+- Gemini API
+- PLLuM
+- Beautiful Soup 4
+- sqlite
+- loguru
+
 ## Źródła wiedzy
 - Przykładowe dane udostępnione przez autorów zadania
 - Publicznie dostępne strony rządowe i organizacji międzynarodowych:
-
-
 
 legit_urls = [
     "https://www.nato.int/en/news-and-events/articles/news/2025/12/04/the-director-general-of-the-international-military-staff-discusses-nato-ukraine-cooperation-with-visiting-ukraine-military-personnel?selectedLocale="
