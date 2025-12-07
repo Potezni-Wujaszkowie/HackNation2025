@@ -10,21 +10,19 @@ class PlanAndSolve(AgentInterface):
         return "Planandsolve"
 
     def run(
-        self, llm: LllmInterface, hiperparams: dict,context: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
+        self, llm: LllmInterface, hiperparams: dict,context: str, merged_briefs: str
     ) -> str:
-        reasoning_plan = self.plan(llm, hiperparams, context, merged_briefs, user_prompt, previous_attempts)
-        return self.solve(llm, hiperparams, reasoning_plan, merged_briefs, user_prompt, previous_attempts)
+        reasoning_plan = self.plan(llm, hiperparams, context, merged_briefs)
+        return self.solve(llm, hiperparams, reasoning_plan, merged_briefs)
 
     @staticmethod
     def plan(
-        llm: LllmInterface, hiperparams: dict, system_prompt: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
+        llm: LllmInterface, hiperparams: dict, system_prompt: str, merged_briefs: str
     ) -> str:
         """
         Planning — understand intent and design an execution strategy.
         """
         logger.info("Generating reasoning plan")
-        chat_history = format_previous_attempts(previous_attempts)
-
         planning_prompt = (
             f"Jesteś Głównym Analitykiem Strategicznym Republiki Atlantis. "
             f"Twoim zadaniem jest przeanalizowanie ważonych danych wywiadowczych i stworzenie PLANU ROZUMOWANIA.\n\n"
@@ -34,10 +32,6 @@ class PlanAndSolve(AgentInterface):
             f"### DANE WEJŚCIOWE Z WAGAMI (PRIORYTETY):\n"
             f"Format danych to: 'WEIGHT: [Wartość] BRIEF: [Treść]'.\n"
             f"{merged_briefs}\n\n"
-
-            f"### HISTORIA ROZMOWY:\n{chat_history}\n\n"
-
-            f"### AKTUALNE ZAPYTANIE:\n{user_prompt}\n\n"
 
             f"### INSTRUKCJE ANALITYCZNE:\n"
             f"1. **ANALIZA WAG (KLUCZOWE):** Zwróć szczególną uwagę na parametr `WEIGHT` przy każdym streszczeniu.\n"
@@ -58,13 +52,12 @@ class PlanAndSolve(AgentInterface):
 
     @staticmethod
     def solve(
-        llm: LllmInterface, hiperparams: dict, system_prompt: str, plan: str, brief_prompts: str, user_prompt: str, previous_attempts: list[dict] = None
+        llm: LllmInterface, hiperparams: dict, system_prompt: str, plan: str, brief_prompts: str
     ) -> str:
         """
         Solving — Generate the final Diplomatic Report based on the reasoning plan.
         """
         logger.info("Generating solution from plan")
-        chat_history = format_previous_attempts(previous_attempts)
 
         solving_prompt = (
             f"Działasz jako Sekretarz ds. Raportów Dyplomatycznych Republiki Atlantis. "
@@ -76,9 +69,7 @@ class PlanAndSolve(AgentInterface):
             f"Format: 'WEIGHT: [Wartość] BRIEF: [Treść]'.\n"
             f"{brief_prompts}\n\n"
 
-            f"### HISTORIA ROZMOWY:\n{chat_history}\n\n"
             f"### PLAN ANALITYKA (TWOJE WYTYCZNE):\n{plan}\n\n"
-            f"### ZAPYTANIE UŻYTKOWNIKA:\n{user_prompt}\n\n"
 
             f"### INSTRUKCJE WYKONAWCZE:\n"
             f"1. **Hierarchia Ważności:** Budując narrację, opieraj główne tezy na dokumentach o najwyższej wadze (`WEIGHT`). Informacje o niskiej wadze traktuj jako tło lub niepotwierdzone sygnały.\n"

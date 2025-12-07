@@ -12,14 +12,13 @@ class MRKL(AgentInterface):
         return "Mrkl"
 
     @staticmethod
-    def get_extract_table_prompt(context: str, prompt: str, previous_attempts_str: str = "") -> str:
+    def get_extract_table_prompt(context: str, prompt: str) -> str:
         return (
             "Based on provided SQL context you need to extract what tables are useful in context of <Prompt>, "
             + "those columns will later be used to generate query to answer this question."
             + "Return only names in format of 'table.column_name', do not generate SQL QUERY yet.\n\n"
             + f"<Context>{context}</Context>\n\n"
             + f"<Prompt>{prompt}</Prompt>\n"
-            + previous_attempts_str
         )
 
     @staticmethod
@@ -37,7 +36,7 @@ class MRKL(AgentInterface):
         )
 
     def run(
-        self, llm: LllmInterface, hiperparams: dict, context: str, merged_briefs: str, user_prompt: str, previous_attempts: list[dict] = None
+        self, llm: LllmInterface, hiperparams: dict, context: str, merged_briefs: str
     ) -> str:
         logger.info("Running MRKL approach")
 

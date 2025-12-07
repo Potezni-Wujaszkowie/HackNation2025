@@ -161,6 +161,7 @@ class AgentManager:
                 hiperparams=hparam,
                 context=context,
                 merged_briefs=aggregated_brief,
+                user_prompt="Generate a strategic report on potential threats and opportunities to Atlantis based on the provided intelligence briefs."
             ))
 
         logger.info(f"Foreseeing done with agent: {self.agent.name()} and llm: {self.llm.name()}.")
@@ -182,12 +183,12 @@ if __name__ == "__main__":
         default_agent=PlanAndSolve().name()
     )
     documents = []
-    with open("test.txt", "r") as f:
+    with open("backend/test.txt", "r") as f:
         documents.append(f.read())
 
     for doc in documents:
         brief = llm_manager.generate_brief(doc, max_words=250)
 
-    brief_weight = [(10, brief, "test.txt") for brief in documents]
+    brief_weight = [(10, brief, "backend/test.txt") for brief in documents]
     out = llm_manager.generate_scenarios_and_summary(brief_weight)
     print(out)
