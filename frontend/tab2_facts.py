@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from db import add_fakt, init_db, get_all_fakty, update_waga, delete_fakt
+from db import add_fakt, init_db, get_all_fakty, update_waga, delete_fakt, get_fakt_by_id
 from loguru import logger
 from extract_engine import TEXT_OUTPUT_FOLDER
 import os
@@ -34,6 +34,24 @@ import os
     # print(out.text)
 
 
+def generate_final_AI_output(selected_ids):
+    """
+    Logika generowania finalnego outputu AI na podstawie zaznaczonych faktów w tab2_view.
+    :param selected_ids: Lista ID zaznaczonych faktów
+    """
+    st.write("Generating final AI output based on selected facts...")
+    facts_list = []
+
+    for fakt_id in selected_ids:
+        fakt_record = get_fakt_by_id(fakt_id)
+        if fakt_record:
+            fakt_id, fakt_text, zrodlo, waga, data = fakt_record
+            facts_list.append((fakt_text, waga, zrodlo))
+        else:
+            logger.warning(f"Fakt with ID {fakt_id} not found in database.")
+
+
+
 def tab2_view():
     st.markdown(
         """
@@ -46,12 +64,12 @@ def tab2_view():
         """,
         unsafe_allow_html=True,
     )
-    st.header("Fakty")
+    # st.header("Fakty")
 
     init_db()
 
-    with st.expander("Dodaj nowy fakt", expanded=False):
-        fakt = st.text_area("Fakt")
+    with st.expander("Dodaj nowy fakt lub założenie", expanded=False):
+        fakt = st.text_area("Fakt lub założenie", height=150)
         weight = st.number_input("Waga", 0.0, 100.0, value=0.0, step=0.01)
 
         if st.button("➕ Dodaj fakt"):
@@ -61,7 +79,16 @@ def tab2_view():
             else:
                 st.warning("Fakt nie może być pusty.")
 
+
+    selected_ids = []
     st.write("---")
+    if st.button("🤖 Generuj predykcje dla wybranych faktów", key=f"tab2_generate_facts"):
+            generate_final_AI_output(selected_ids)
+            st.success("Wygenerowano odpowidź na podstawie zaznaczonych faktów.")
+
+    st.write("---")
+
+
     with st.expander("Wylistuj wszystkie fakty", expanded=False):
         st.subheader("Filtry")
         st.info("Zaznacz fakty, które AI ma wziąć pod uwagę podczas generowania odpowiedzi (domyślnie wszystkie są zaznaczone).")
@@ -85,7 +112,7 @@ def tab2_view():
 
         filtered_facts.sort(key=lambda x: x[4], reverse=(sort_order == "Od najnowszej"))
 
-        selected_ids = []
+        
         if not filtered_facts:
             st.info("Brak faktów spełniających kryteria.")
         else:
@@ -137,8 +164,8 @@ def tab2_view():
                         delete_fakt(fakt_id)
                         st.rerun()
         
-        if st.button("GENERATE", key=f"tab2_generate_facts"):
-            
+        
+
             # context_paths = []
             # output_path = "./uploads_text"
 
@@ -157,8 +184,7 @@ def tab2_view():
             
             
             
-            st.success("Wygenerowano odpowidź na podstawie zaznaczonych faktów.")
-
+            
         if selected_ids:
             # st.write("Shorts: ", shorts)
             st.write("Zaznaczone ID:", selected_ids)

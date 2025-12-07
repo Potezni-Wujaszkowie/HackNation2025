@@ -10,18 +10,18 @@ import yaml
 from db import add_fakt
 import time
 # from logguru import logger
+from main import generate_brief
 
 UPLOAD_FOLDER = os.path.join(os.getcwd(), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
-def generate_brief(llm: LllmInterface, document: str, max_words: int) -> str:
-    prompt = f'Używając maksymalnie {max_words} słów wygeneruj streszczenie'
-    f'poniższego dokumentu (uwzględnij jak najwięcej faktów, liczb oraz konkretów):\n\n{document}'
-    return llm.generate_response(prompt)
-
-
 def generate_AI_output(context_path):
+    """
+    Logika generowania outputu AI na podstawie podanej ścieżki kontekstu, używa funkcji generate_brief do tworzenia faktów.
+    
+    :param context_path: Description
+    """
     st.write("context_paths w funkcji generate_AI_output:", context_path)
 
     with open("config.yaml", "r") as f:
